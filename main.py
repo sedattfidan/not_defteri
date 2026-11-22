@@ -1,5 +1,4 @@
-# Not Defteri (tkinter GUI)
-# Notları JSON dosyasında saklar. Oluşturma, düzenleme, silme ve arama yapılabilir.
+# Notları JSON dosyasında saklar. Oluşturma , düzenleme , silme ve arama yapabilir.
 
 import json
 import os
@@ -10,7 +9,6 @@ DATA_FILE = "notlar.json"
 
 
 def load_notes():
-    # Notları dosyadan okur
     if not os.path.exists(DATA_FILE):
         return []
     with open(DATA_FILE, "r", encoding="utf-8") as file:
@@ -18,24 +16,21 @@ def load_notes():
 
 
 def save_notes():
-    # Notları dosyaya yazar
     with open(DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(notes, file, ensure_ascii=False, indent=2)
 
 
 def refresh_list():
-    # Sol listedeki başlıkları arama kutusuna göre yeniler
     note_list.delete(0, tk.END)
     visible_indexes.clear()
     keyword = search_var.get().lower()
     for i, note in enumerate(notes):
         if keyword in note["title"].lower() or keyword in note["content"].lower():
             note_list.insert(tk.END, note["title"])
-            visible_indexes.append(i)  # Listedeki sıra -> notes içindeki gerçek index
+            visible_indexes.append(i)  
 
 
 def get_selected_index():
-    # Listede seçili notun notes içindeki index'ini döndürür
     selection = note_list.curselection()
     if not selection:
         return None
@@ -43,7 +38,6 @@ def get_selected_index():
 
 
 def show_note(event=None):
-    # Seçilen notu sağdaki alanlara yükler
     index = get_selected_index()
     if index is None:
         return
@@ -54,7 +48,6 @@ def show_note(event=None):
 
 
 def clear_form():
-    # Yeni not için alanları temizler
     note_list.selection_clear(0, tk.END)
     title_entry.delete(0, tk.END)
     content_text.delete("1.0", tk.END)
@@ -62,7 +55,6 @@ def clear_form():
 
 
 def save_note():
-    # Seçili not varsa günceller, yoksa yeni not ekler
     title = title_entry.get().strip()
     content = content_text.get("1.0", tk.END).strip()
     if title == "":
@@ -79,7 +71,6 @@ def save_note():
 
 
 def delete_note():
-    # Seçili notu onay alarak siler
     index = get_selected_index()
     if index is None:
         messagebox.showinfo("Bilgi", "Silmek için bir not seçin.")
@@ -92,7 +83,6 @@ def delete_note():
         status_var.set("Not silindi.")
 
 
-# --- Arayüz ---
 notes = load_notes()
 visible_indexes = []
 
@@ -100,20 +90,18 @@ window = tk.Tk()
 window.title("Not Defteri")
 window.geometry("700x450")
 
-# Sol taraf: arama kutusu ve not listesi
 left = tk.Frame(window, padx=8, pady=8)
 left.pack(side=tk.LEFT, fill=tk.Y)
 
 tk.Label(left, text="Ara:").pack(anchor="w")
 search_var = tk.StringVar()
-search_var.trace_add("write", lambda *args: refresh_list())  # Her harfte listeyi yenile
+search_var.trace_add("write", lambda *args: refresh_list())  
 tk.Entry(left, textvariable=search_var).pack(fill=tk.X)
 
 note_list = tk.Listbox(left, width=25)
 note_list.pack(fill=tk.Y, expand=True, pady=5)
 note_list.bind("<<ListboxSelect>>", show_note)
 
-# Sağ taraf: başlık, içerik ve butonlar
 right = tk.Frame(window, padx=8, pady=8)
 right.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
